@@ -3,8 +3,7 @@
 > **High-performance REST API for detecting online gambling content in Indonesian text using Fine-Tuned IndoBERT.**
 > *Final Year Thesis (Skripsi) Project.*
 
-![Dashboard Preview](https://via.placeholder.com/800x400?text=Ganti+dengan+Screenshot+Dashboard+Lu)
-*(Ganti link di atas dengan URL gambar screenshot Dashboard web lu)*
+![Dashboard Preview](https://github.com/rifki-ardhika-putra7/indobert-gambling-detection/blob/main/Judol%20AI.png)
 
 ---
 
