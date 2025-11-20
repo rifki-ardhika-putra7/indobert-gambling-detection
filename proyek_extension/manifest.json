@@ -1,0 +1,21 @@
+{
+  "manifest_version": 2,
+  "name": "Detektor Judi Online",
+  "version": "1.0",
+  "description": "Cek teks yang di-highlight pakai API IndoBERT.",
+
+  "permissions": ["contextMenus", "http://127.0.0.1:8000/*", "storage"],
+
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": false
+  },
+
+  "web_accessible_resources": [
+    "popup.html",
+    "popup.css",
+    "popup.js",
+    "assets/aman.png",
+    "assets/stop_judi.png"
+  ]
+}

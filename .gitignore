@@ -1,0 +1,8 @@
+# --- IGNORE LARGE MODEL FILES ---
+*.safetensors
+*.bin
+*.pt
+*.zip
+model_skripsi_siap_download/
+pytorch_model.bin
+tf_model.h5

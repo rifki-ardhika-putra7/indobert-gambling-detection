@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Detector - Anti Judol</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+        :root {
+            /* GANTI WARNA UTAMA DI SINI */
+            --primary-color: #2980B9;
+            /* Biru Profesional (Tech Blue) */
+            --secondary-color: #2C3E50;
+            /* Navy Gelap (Accent) */
+            --sidebar-width: 260px;
+        }
+    
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #EAEDED;
+            /* Abu-abu yang lebih bersih/terang */
+            overflow-x: hidden;
+        }
+    
+        /* --- Sidebar Modern --- */
+        .sidebar {
+            height: 100vh;
+            width: var(--sidebar-width);
+            position: fixed;
+            top: 0;
+            left: 0;
+            /* GANTI BACKGROUND SIDEBAR JADI DEEP OCEAN */
+            background: linear-gradient(180deg, #0F2027 0%, #203A43 100%);
+            color: white;
+            transition: all 0.3s;
+            z-index: 1000;
+            box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
+        }
+    
+        .sidebar-brand {
+            padding: 30px 20px;
+            font-weight: 700;
+            font-size: 1.4rem;
+            letter-spacing: 1px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    
+        .nav-link {
+            color: #BDC3C7;
+            /* Abu terang */
+            padding: 15px 25px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+            cursor: pointer;
+        }
+    
+        .nav-link:hover,
+        .nav-link.active {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.1);
+            /* Border kiri jadi Biru Terang biar kontras */
+            border-left: 4px solid #3498DB;
+            padding-left: 30px;
+        }
+    
+        .nav-link i {
+            margin-right: 10px;
+            width: 20px;
+        }
+    
+        /* --- Main Content --- */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            padding: 40px;
+            min-height: 100vh;
+            transition: all 0.3s;
+        }
+    
+        /* --- Cards & Glassmorphism --- */
+        .glass-card {
+            background: white;
+            border-radius: 12px;
+            /* Sedikit lebih kotak biar tegas */
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            overflow: hidden;
+        }
+    
+        .glass-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        }
+    
+        .card-header-custom {
+            /* Gradasi Header Kartu */
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 20px 30px;
+            border-radius: 12px 12px 0 0;
+            font-weight: 600;
+        }
+    
+        /* --- Buttons --- */
+        .btn-custom {
+            /* Gradasi Tombol */
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            color: white;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-weight: 600;
+            box-shadow: 0 5px 15px rgba(41, 128, 185, 0.3);
+            /* Shadow biru */
+            transition: all 0.3s;
+        }
+    
+        .btn-custom:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(41, 128, 185, 0.4);
+            color: white;
+        }
+    
+        /* --- Result Animations --- */
+        .result-box {
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+            animation: popIn 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        }
+    
+        @keyframes popIn {
+            0% {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+    
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+    
+        /* --- Loading Overlay --- */
+        #loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            z-index: 9999;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            backdrop-filter: blur(5px);
+        }
+    
+        .loader-modern {
+            width: 60px;
+            height: 60px;
+            border: 6px solid #f3f3f3;
+            border-top: 6px solid var(--secondary-color);
+            /* Warna loader jadi gelap */
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+    
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+    
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    
+        /* --- Table Styling --- */
+        .table-custom thead {
+            background-color: #F8F9FA;
+            color: #2C3E50;
+            font-weight: 700;
+        }
+    
+        .table-custom th,
+        .table-custom td {
+            vertical-align: middle;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+        }
+    
+        /* --- Responsive --- */
+        @media (max-width: 768px) {
+            .sidebar {
+                left: -260px;
+            }
+    
+            .sidebar.active {
+                left: 0;
+            }
+    
+            .main-content {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <i class="fa-solid fa-robot"></i> AI DETECTOR
+        </div>
+        <ul class="nav flex-column mt-3">
+            <li class="nav-item" onclick="switchTab('single')">
+                <a class="nav-link active" id="btn-single"><i class="fa-solid fa-magnifying-glass"></i> Cek Satuan</a>
+            </li>
+            <li class="nav-item" onclick="switchTab('batch')">
+                <a class="nav-link" id="btn-batch"><i class="fa-solid fa-file-csv"></i> Cek Massal (CSV)</a>
+            </li>
+            <li class="nav-item" onclick="switchTab('dashboard')">
+                <a class="nav-link" id="btn-dashboard"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
+            </li>
+        </ul>
+
+        <div style="position: absolute; bottom: 20px; left: 20px; color: #666; font-size: 0.8rem;">
+            Skripsi TI 2025<br>v.2.0 Modern UI
+        </div>
+    </div>
+
+    <div class="main-content">
+
+        <div class="d-flex justify-content-between align-items-center mb-5" data-aos="fade-down">
+            <div>
+                <h2 class="fw-bold text-dark mb-0">Sistem Deteksi Judi Online</h2>
+                <p class="text-muted">Berbasis Model IndoBERT (Fine-Tuned)</p>
+            </div>
+            <button class="btn btn-light rounded-circle shadow-sm d-md-none" onclick="toggleSidebar()">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+        </div>
+
+        <div id="view-single" data-aos="fade-up">
+            <div class="glass-card">
+                <div class="card-header-custom">
+                    <i class="fa-regular fa-keyboard me-2"></i> Uji Coba Manual
+                </div>
+                <div class="p-4">
+                    <div class="mb-4">
+                        <label class="form-label fw-bold text-muted">Masukkan Teks / Caption:</label>
+                        <textarea class="form-control border-0 bg-light p-3" id="singleInput" rows="5"
+                            placeholder="Contoh: Situs gacor depo 20k... (Ketik di sini)"
+                            style="border-radius: 15px; font-size: 1.1rem;"></textarea>
+                    </div>
+                    <button class="btn btn-custom" onclick="predictSingle()">
+                        <i class="fa-solid fa-bolt me-2"></i> Analisis Sekarang
+                    </button>
+
+                    <div id="singleResult" class="mt-4" style="display:none;">
+                        <div id="resultBox" class="result-box text-center text-white">
+                            <h1 id="resLabel" class="display-4 fw-bold mb-0"></h1>
+                            <p class="mb-0 mt-2 op-7">Tingkat Keyakinan AI: <strong id="resScore"
+                                    class="bg-white text-dark px-2 py-1 rounded"></strong></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="view-batch" style="display:none;" data-aos="zoom-in">
+            <div class="glass-card">
+                <div class="card-header-custom">
+                    <i class="fa-solid fa-upload me-2"></i> Upload File CSV
+                </div>
+                <div class="p-5 text-center">
+                    <i class="fa-solid fa-cloud-arrow-up fa-3x text-primary mb-3"></i>
+                    <h5 class="mb-3">Drag & Drop atau Pilih File CSV</h5>
+                    <input class="form-control form-control-lg w-50 mx-auto mb-4" type="file" id="csvInput"
+                        accept=".csv">
+                    <button class="btn btn-custom px-5" onclick="predictBatch()">
+                        <i class="fa-solid fa-rocket me-2"></i> Mulai Proses Batch
+                    </button>
+                </div>
+            </div>
+
+            <div id="batchResultArea" class="glass-card p-4" style="display:none;">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold">📋 Hasil Analisis</h5>
+                    <button class="btn btn-outline-success rounded-pill" onclick="downloadCSV()">
+                        <i class="fa-solid fa-download me-1"></i> Download Excel/CSV
+                    </button>
+                </div>
+                <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
+                    <table class="table table-custom table-hover" id="resultTable">
+                        <thead>
+                            <tr>
+                                <th width="5%">No</th>
+                                <th width="60%">Teks Asli</th>
+                                <th width="20%">Prediksi</th>
+                                <th width="15%">Score</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="view-dashboard" style="display:none;">
+
+            <div class="row mb-4">
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+                    <div class="glass-card p-4 d-flex align-items-center">
+                        <div class="bg-primary text-white rounded-circle p-3 me-3"><i
+                                class="fa-solid fa-database fa-2x"></i></div>
+                        <div>
+                            <p class="text-muted mb-0">Total Data</p>
+                            <h2 class="fw-bold mb-0" id="statTotal">0</h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+                    <div class="glass-card p-4 d-flex align-items-center">
+                        <div class="bg-danger text-white rounded-circle p-3 me-3"><i
+                                class="fa-solid fa-triangle-exclamation fa-2x"></i></div>
+                        <div>
+                            <p class="text-muted mb-0">Terindikasi JUDOL</p>
+                            <h2 class="fw-bold mb-0 text-danger" id="statJudol">0</h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
+                    <div class="glass-card p-4 d-flex align-items-center">
+                        <div class="bg-success text-white rounded-circle p-3 me-3"><i
+                                class="fa-solid fa-shield-halved fa-2x"></i></div>
+                        <div>
+                            <p class="text-muted mb-0">Konten AMAN</p>
+                            <h2 class="fw-bold mb-0 text-success" id="statAman">0</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6" data-aos="fade-right">
+                    <div class="glass-card p-4 h-100">
+                        <h5 class="fw-bold mb-4 text-center">📈 Proporsi Data</h5>
+                        <canvas id="pieChart"></canvas>
+                    </div>
+                </div>
+                <div class="col-md-6" data-aos="fade-left">
+                    <div class="glass-card p-4 h-100">
+                        <h5 class="fw-bold mb-4 text-center">☁️ Kata Kunci Terdeteksi</h5>
+                        <div class="text-center d-flex align-items-center justify-content-center"
+                            style="min-height: 300px;">
+                            <img id="wordcloudImg" src="" class="img-fluid rounded shadow-sm" style="display:none;">
+                            <div id="wcPlaceholder" class="text-muted">
+                                <i class="fa-regular fa-image fa-3x mb-3"></i>
+                                <p>Analisis data massal terlebih dahulu untuk melihat Word Cloud.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="loading">
+        <div class="loader-modern"></div>
+        <h5 class="mt-4 fw-bold text-primary">Sedang Menganalisis...</h5>
+        <p class="text-muted">AI sedang membaca data Anda</p>
+    </div>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        // Inisialisasi Animasi
+        AOS.init({ duration: 800, once: true });
+
+        // --- NAVIGASI TAB ---
+        function switchTab(tabName) {
+            ['single', 'batch', 'dashboard'].forEach(t => {
+                document.getElementById('view-' + t).style.display = 'none';
+                document.getElementById('btn-' + t).classList.remove('active');
+            });
+
+            const target = document.getElementById('view-' + tabName);
+            target.style.display = 'block';
+            document.getElementById('btn-' + tabName).classList.add('active');
+
+            // Trigger ulang animasi AOS saat pindah tab
+            target.querySelectorAll('[data-aos]').forEach(el => {
+                el.classList.remove('aos-animate');
+                setTimeout(() => el.classList.add('aos-animate'), 10);
+            });
+        }
+
+        // --- 1. PREDIKSI TUNGGAL ---
+        async function predictSingle() {
+            const text = document.getElementById('singleInput').value;
+            if (!text) return Swal.fire('Ops!', 'Mohon isi teks terlebih dahulu.', 'warning');
+
+            showLoading(true);
+
+            const formData = new FormData();
+            formData.append('text', text);
+
+            try {
+                const res = await fetch('http://localhost:8000/api/predict-single', { method: 'POST', body: formData });
+                const data = await res.json();
+
+                const resultBox = document.getElementById('resultBox');
+                const resLabel = document.getElementById('resLabel');
+
+                document.getElementById('singleResult').style.display = 'block';
+                resLabel.innerText = data.label;
+                document.getElementById('resScore').innerText = data.score;
+
+                if (data.label.includes("JUDI")) {
+                    resultBox.style.background = "linear-gradient(45deg, #ff416c, #ff4b2b)";
+                    Swal.fire('Waspada!', 'Konten ini terindikasi JUDI ONLINE.', 'error');
+                } else {
+                    resultBox.style.background = "linear-gradient(45deg, #11998e, #38ef7d)";
+                    Swal.fire('Aman!', 'Konten ini bersih.', 'success');
+                }
+            } catch (err) {
+                Swal.fire('Error', 'Gagal menghubungi server.', 'error');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // --- 2. PREDIKSI BATCH ---
+        let globalBatchData = [];
+
+        async function predictBatch() {
+            const fileInput = document.getElementById('csvInput');
+            if (fileInput.files.length === 0) return Swal.fire('File Kosong', 'Pilih file CSV dulu ya.', 'warning');
+
+            showLoading(true);
+
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+
+            try {
+                const res = await fetch('http://localhost:8000/api/predict-batch', { method: 'POST', body: formData });
+                const json = await res.json();
+
+                if (json.error) {
+                    Swal.fire('Error CSV', json.error, 'error');
+                    showLoading(false);
+                    return;
+                }
+
+                globalBatchData = json.data;
+                renderTable(json.data);
+                updateDashboard(json.stats, json.wordcloud);
+
+                document.getElementById('batchResultArea').style.display = 'block';
+                Swal.fire('Selesai!', `Berhasil memproses ${json.stats.total} data.`, 'success');
+
+            } catch (err) {
+                console.error(err);
+                Swal.fire('Gagal', 'Terjadi kesalahan saat proses.', 'error');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        function renderTable(data) {
+            const tbody = document.querySelector('#resultTable tbody');
+            tbody.innerHTML = '';
+            data.forEach((item, index) => {
+                const badge = item.label.includes("JUDI")
+                    ? '<span class="badge bg-danger"><i class="fa-solid fa-triangle-exclamation"></i> JUDOL</span>'
+                    : '<span class="badge bg-success"><i class="fa-solid fa-check"></i> AMAN</span>';
+
+                const row = `<tr>
+                <td>${index + 1}</td>
+                <td class="text-muted">${item.text.substring(0, 60)}...</td>
+                <td>${badge}</td>
+                <td><strong>${item.score}</strong></td>
+            </tr>`;
+                tbody.innerHTML += row;
+            });
+        }
+
+        // --- 3. DASHBOARD ---
+        let myPieChart = null;
+
+        function updateDashboard(stats, wcImage) {
+            document.getElementById('statTotal').innerText = stats.total;
+            document.getElementById('statJudol').innerText = stats.judol;
+            document.getElementById('statAman').innerText = stats.aman;
+
+            // Update Chart
+            const ctx = document.getElementById('pieChart').getContext('2d');
+            if (myPieChart) myPieChart.destroy();
+
+            myPieChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Judi Online', 'Aman'],
+                    datasets: [{
+                        data: [stats.judol, stats.aman],
+                        backgroundColor: ['#ff4b2b', '#38ef7d'],
+                        borderWidth: 0
+                    }]
+                },
+                options: { responsive: true, cutout: '70%' }
+            });
+
+            // Update Word Cloud
+            if (wcImage) {
+                document.getElementById('wordcloudImg').src = "data:image/png;base64," + wcImage;
+                document.getElementById('wordcloudImg').style.display = 'block';
+                document.getElementById('wcPlaceholder').style.display = 'none';
+            }
+        }
+
+        // --- UTILITAS ---
+        function downloadCSV() {
+            if (globalBatchData.length === 0) return;
+            let csv = "Teks,Label,Score\n";
+            globalBatchData.forEach(r => csv += `"${r.text.replace(/"/g, '""')}",${r.label},${r.score}\n`);
+            const link = document.createElement("a");
+            link.href = 'data:text/csv;charset=utf-8,' + encodeURI(csv);
+            link.download = "hasil_analisis_skripsi.csv";
+            link.click();
+        }
+
+        function showLoading(show) {
+            document.getElementById('loading').style.display = show ? 'flex' : 'none';
+        }
+
+        function toggleSidebar() {
+            document.querySelector('.sidebar').classList.toggle('active');
+        }
+    </script>
+
+</body>
+
+</html>

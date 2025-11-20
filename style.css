@@ -1,0 +1,238 @@
+/* Import Font (Opsional, tapi bikin modern) */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+
+/* Reset CSS & Atur Background Gradien */
+body {
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    width: 100vw;
+    background: radial-gradient(ellipse at center, #1f2937, #0b0f19);
+    color: #e5e7eb;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+/* Kontainer Utama (Flexbox) */
+.main-container {
+    display: flex;
+    width: 100%;
+    height: 100%;
+}
+
+/* Pengaturan untuk kedua kolom */
+.column {
+flex: 1;
+    padding: 4rem;
+    /* Padding tetap di sini, jadi konten di dalamnya ada jarak */
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100vh;
+}
+
+/* Wrapper biar gampang di-manage */
+.content-wrapper {
+    max-width: 650px;
+    /* Batas lebar konten di tiap kolom */
+    width: 100%;
+}
+
+/* --- Gaya Kolom Kiri (Input) --- */
+
+h1 {
+    color: #ffffff;
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 2.8em;
+    /* Ukuran font lebih besar */
+    font-weight: 700;
+}
+
+p {
+    color: #9ca3af;
+    /* Abu-abu terang */
+    margin-bottom: 30px;
+    font-size: 1.1em;
+    line-height: 1.6;
+}
+
+textarea {
+    width: 100%;
+    min-height: 200px;
+    padding: 15px;
+    border: 1px solid #374151;
+    /* Border abu-abu gelap */
+    border-radius: 8px;
+    font-size: 1em;
+    font-family: 'Poppins', sans-serif;
+    color: #e5e7eb;
+    /* Teks input putih */
+    background-color: #1f2937;
+    /* Background textarea gelap */
+    transition: border-color 0.3s ease;
+    resize: vertical;
+    box-sizing: border-box;
+}
+
+textarea:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+button {
+    padding: 12px 25px;
+    font-size: 1.1em;
+    font-weight: 600;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    margin-top: 20px;
+    width: 100%;
+    /* Tombol jadi full-width */
+    box-shadow: 0 4px 15px rgba(0, 123, 255, 0.2);
+}
+
+button:hover {
+    background-color: #0056b3;
+    transform: translateY(-2px);
+}
+
+button:disabled {
+    background-color: #555;
+    color: #999;
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+}
+
+/* --- Gaya Kolom Kanan (Output) --- */
+
+.status-message {
+    font-style: italic;
+    color: #9ca3af;
+    font-size: 1em;
+    min-height: 24px;
+    /* Biar nggak lompat */
+    text-align: center;
+}
+
+/* Kartu Hasil (Sekarang 'transparan') */
+.result-card {
+    background-color: transparent;
+    /* Hapus background putih */
+    border-radius: 10px;
+    padding: 0;
+    /* Hapus padding, udah di-handle kolom */
+    margin-top: 20px;
+    box-shadow: none;
+    /* Hapus bayangan */
+    text-align: center;
+    /* Ratakan semua di tengah */
+    transition: all 0.5s ease-in-out;
+    transform: translateY(10px);
+    opacity: 0;
+}
+
+.result-card.show {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+/* Stiker (Ditaruh di atas) */
+.sticker-area {
+    text-align: center;
+    margin-bottom: 25px;
+    /* Jarak dari stiker ke label */
+}
+
+.sticker-area img {
+    max-width: 200px;
+    /* Stiker lebih besar */
+    height: auto;
+    animation: popIn 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards;
+}
+
+/* Header Hasil (Label & Skor) */
+.result-header {
+    /* Kita tumpuk aja di tengah */
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.result-label {
+    display: block;
+    /* Biar turun ke bawah */
+    font-size: 2.2em;
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+.result-score {
+    display: block;
+    font-size: 1.2em;
+    font-weight: 600;
+    color: #9ca3af;
+    /* Skor pakai warna abu-abu */
+}
+
+/* Warna khusus (Sama kayak sebelumnya) */
+.result-card.judi .result-label {
+    color: #f87171;
+}
+
+/* Merah */
+.result-card.aman .result-label {
+    color: #4ade80;
+}
+
+/* Hijau */
+
+/* Progress Bar (Sama kayak sebelumnya) */
+.progress-bar-container {
+    width: 100%;
+    background-color: #374151;
+    /* Background bar gelap */
+    border-radius: 5px;
+    height: 12px;
+    margin-bottom: 25px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    width: 0%;
+    border-radius: 5px;
+    transition: width 0.8s ease-out;
+}
+
+.result-card.judi .progress-bar {
+    background-color: #f87171;
+}
+
+.result-card.aman .progress-bar {
+    background-color: #4ade80;
+}
+
+/* Animasi Stiker (Sama kayak sebelumnya) */
+@keyframes popIn {
+    0% {
+        transform: scale(0.5);
+        opacity: 0;
+    }
+
+    70% {
+        transform: scale(1.1);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
